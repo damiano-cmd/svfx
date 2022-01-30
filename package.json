@@ -1,0 +1,25 @@
+{
+  "name": "svfx",
+  "version": "0.0.1",
+  "description": "Animation effects that use the use directive in svelte.",
+  "main": "src/index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/damiano-cmd/svfx.git"
+  },
+  "keywords": [
+    "js",
+    "animation",
+    "svelte",
+    "fx"
+  ],
+  "author": "damian-deni",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/damiano-cmd/svfx/issues"
+  },
+  "homepage": "https://github.com/damiano-cmd/svfx#readme"
+}
