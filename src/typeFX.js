@@ -49,44 +49,65 @@ export function typeCorectionAnimation(node, {duration = 1000, delay = 0, corect
 
   if (!error) {
 
+    
     let text = node.innerText;
     node.innerText = text.replace("%", "");
-    let i = 0;
 
-    const corloop = () => {
-      let arr = ["", ...corections[i].split("")];
-      let corection = "";
-      
-      let int = setInterval(() => {
-        if (arr.length > 0) {
-          corection += (arr[0] == " ") ? arr.shift() + arr.shift() : arr.shift();
-          node.innerText = text.replace("%", corection);
+    let i = 0;
+    let letter = 0;
+    let interval;
+
+    function Type() { 
+
+      let text2 = corections[i].substring(0, letter + 1);
+      node.innerHTML = text.replace("%", text2);
+      letter++;
+
+      if(text2 === corections[i]) {
+        clearInterval(interval);
+        if (play == "pingpong") {
+          setTimeout(function() {
+            interval = setInterval(Delete, duration / corections[i].length / 2);
+          }, delay);
         } else {
-          clearInterval(int);
+          
+          if(i == (corections.length - 1))
+            i = 0;
+          else
+            i++;
+          
+          letter = 0;
+          setTimeout(function() {
+            interval = setInterval(Type, duration / corections[i].length);
+          }, delay);
         }
-      }, duration / arr.length)
-    
-      if (play == "pingpong") {
-        setTimeout(() => {
-          arr = corection.split("");
-          let int2 = setInterval(() => {
-            if (arr.length > 0) {
-              arr.pop();
-              node.innerText = text.replace("%", arr.join(""));
-            } else {
-              clearInterval(int2);
-            }
-          }, duration / arr.length)
-        }, duration+delay)
-      }
-    
-      i++;
-      if (i >= corections.length) {
-        i = 0;
       }
     }
 
-    corloop()
-    setInterval(corloop, time);
+    function Delete() {
+
+      let text2 = corections[i].substring(0, letter + 1);
+      node.innerHTML = text.replace("%", text2);
+      letter--;
+
+      if(text2 === '') {
+        clearInterval(interval);
+
+        if(i == (corections.length - 1))
+          i = 0;
+        else
+          i++;
+        
+        letter = 0;
+
+        setTimeout(function() {
+          interval = setInterval(Type, duration / corections[i].length);
+        }, delay);
+      }
+    }
+
+    setTimeout(() => {
+      interval = setInterval(Type, duration / corections[i].length);
+    }, delay)
   }
 }
