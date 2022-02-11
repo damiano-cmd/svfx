@@ -1,6 +1,6 @@
 {
   "name": "svfx",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "Animation effects that use the use directive in svelte.",
   "main": "src/index.js",
   "scripts": {

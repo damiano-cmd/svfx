@@ -31,7 +31,7 @@ This is how you use it.
   </style>
 ```
 
-Curently it has scrollFunctions, Animation function, typeAnimation and typeCorectionAnimation.
+Curently it has the functions: scrollFunctions, Animation, typeAnimation, typeCorectionAnimation and ImageSlade.
 
 ## typeAnimation
 
@@ -88,3 +88,16 @@ It also has some arguments:
         }}
       >
     ```
+
+## ImageSlade
+
+This function needs an empty `div` element and it will make an image slide show.
+
+Function header: 
+`function ImageSlade(node, images = [], timing = 1000, fadeTiming = 500)`
+
+Explining arguments:
+  - node - ref to the empty div.
+  - images - links to the images you want to show.
+  - timing - the duration of image before switching.
+  - fadeTiming - the duration he switching animation. 
