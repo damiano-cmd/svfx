@@ -1,42 +1,50 @@
 import {Animation} from "./Animation"
 
-export function scrollFunctions(node, params = {}) {
+export function scrollFunctions(node, params = {
+    fromTop: 0, 
+    fromBottom: 0, 
+    onscreen: undefined, 
+    enterscreen: undefined, 
+    leavescreen: undefined, 
+    entertop: undefined, 
+    leavetop: undefined, 
+    leavebottom: undefined, 
+    enterbottom: undefined
+}) {
   let {
-    fromTop = 0, 
-    fromBottom = 0, 
+    fromTop, 
+    fromBottom, 
 
-    onscreen = false, 
-    enterscreen = false,
-    leavescreen = false,
+    onscreen, 
+    enterscreen,
+    leavescreen,
 
-    entertop = false,
-    leavetop = false,
+    entertop,
+    leavetop,
 
-    leavebottom = false,
-    enterbottom = false
+    leavebottom,
+    enterbottom
   } = params;
-  {
-    if (onscreen != false && typeof onscreen != "function") {
-      onscreen = Animation(onscreen);
-    }
-    if (enterscreen != false && typeof onscreen != "function") {
-      enterscreen = Animation(enterscreen);
-    }
-    if (leavescreen != false && typeof onscreen != "function") {
-      leavescreen = Animation(leavescreen);
-    }
-    if (entertop != false && typeof onscreen != "function") {
-      entertop = Animation(entertop);
-    }
-    if (leavetop != false && typeof onscreen != "function") {
-      leavetop = Animation(leavetop);
-    }
-    if (leavebottom != false && typeof onscreen != "function") {
-      leavebottom = Animation(leavebottom);
-    }
-    if (enterbottom != false && typeof onscreen != "function") {
-      enterbottom = Animation(enterbottom);
-    }
+  if (onscreen != undefined && typeof onscreen != "function") {
+    onscreen = Animation(onscreen);
+  }
+  if (enterscreen != undefined && typeof enterscreen != "function") {
+    enterscreen = Animation(enterscreen);
+  }
+  if (leavescreen != undefined && typeof leavescreen != "function") {
+    leavescreen = Animation(leavescreen);
+  }
+  if (entertop != undefined && typeof entertop != "function") {
+    entertop = Animation(entertop);
+  }
+  if (leavetop != undefined && typeof leavetop != "function") {
+    leavetop = Animation(leavetop);
+  }
+  if (leavebottom != undefined && typeof leavebottom != "function") {
+    leavebottom = Animation(leavebottom);
+  }
+  if (enterbottom != undefined && typeof enterbottom != "function") {
+    enterbottom = Animation(enterbottom);
   }
   
   let is_scroll_to = false;
@@ -45,34 +53,52 @@ export function scrollFunctions(node, params = {}) {
 
   const handleScroll = () => {
 
-    let scrl = window.innerHeight+window.scrollY-fromBottom;
-    let offsetBottom = node.offsetTop+node.clientHeight;
+    let scrl;
+    let offsetTop;
 
+    if (typeof fromBottom == "string")
+    {
+      let fromBottomP = window.innerHeight*(parseInt(fromBottom)/100);
+      scrl = window.innerHeight+window.scrollY-fromBottomP;
+    } else {
+      scrl = window.innerHeight+window.scrollY-fromBottom;
+    }
+
+    if (typeof fromTop == "string")
+    {
+      let fromTopP = window.innerHeight*(parseInt(fromTop)/100)
+      offsetTop = window.scrollY+fromTopP;
+    } else {
+      offsetTop = window.scrollY+fromTop;
+    }
+
+    let offsetBottom = node.offsetTop+node.clientHeight;
+    
     if (node.offsetTop < scrl && !is_scroll_to) {
       node.dispatchEvent(new CustomEvent("entertop"));
-      if (entertop != false) {
+      if (entertop != undefined) {
         entertop({target: node});
       }
       is_scroll_to = true;
     }
     if (node.offsetTop > scrl && is_scroll_to == true) {
       node.dispatchEvent(new CustomEvent("leavetop"));
-      if (leavetop != false) {
+      if (leavetop != undefined) {
         leavetop({target: node});
       }
       is_scroll_to = false;
     }
 
-    if (offsetBottom < window.scrollY-fromTop && !is_scroll_past) {
+    if (offsetBottom < offsetTop && !is_scroll_past) {
       node.dispatchEvent(new CustomEvent("leavebottom"));
-      if (leavebottom != false) {
+      if (leavebottom != undefined) {
         leavebottom({target: node});
       }
       is_scroll_past = true;
     }
-    if (offsetBottom > window.scrollY-fromTop && is_scroll_past == true) {
+    if (offsetBottom > offsetTop && is_scroll_past == true) {
       node.dispatchEvent(new CustomEvent("enterbottom"));
-      if (enterbottom != false) {
+      if (enterbottom != undefined) {
         enterbottom({target: node});
       }
       is_scroll_past = false;
@@ -80,19 +106,19 @@ export function scrollFunctions(node, params = {}) {
 
     if (is_scroll_to && !is_scroll_past) {
       node.dispatchEvent(new CustomEvent("onscreen"));
-      if (onscreen != false) {
+      if (onscreen != undefined) {
         onscreen({target: node});
       }
       if (is_on_screen == false) {
         node.dispatchEvent(new CustomEvent("enterscreen"));
-        if (enterscreen != false) {
+        if (enterscreen != undefined) {
           enterscreen({target: node});
         }
         is_on_screen = true;
       }
     } else if (is_on_screen == true) {
       node.dispatchEvent(new CustomEvent("leavescreen"));
-      if (leavescreen != false) {
+      if (leavescreen != undefined) {
         leavescreen({target: node});
       }
       is_on_screen = false;

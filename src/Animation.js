@@ -1,21 +1,27 @@
-export function Animation({name, duration = 1000, delay = 0, timing = "", once = false, reset = false}) {
+export function Animation(args = {name, duration, delay, timing, once, reset}) {
+  let {name = undefined, duration = 1000, delay = 0, timing = "ease", once = false, reset = false} = args;
   if (name != undefined) {
-    return ({target}) => {
-      target.style.animationName = name;
-      target.style.animationDuration = duration.toString() + "ms";
-      if (!reset) {
-        target.style.animationFillMode = "forwards";
-      }
-      if (!once) {
-        setTimeout(() => {
-          target.style.animationName = '';
-        }, duration+delay);
-      }
+    return ({target = document.createElement()}) => {
+      setTimeout(() => {
+        target.style.animationName = name;
+        target.style.animationDuration = duration.toString() + "ms";
+        target.style.animationTimingFunction = timing
+        if (!reset) {
+          target.style.animationFillMode = "forwards";
+        }
+        if (!once) {
+          setTimeout(() => {
+            target.style.animationName = '';
+          }, duration);
+        }
+      }, delay)
     };
   }
 }
 
-export function ImageSlade(node, images = [], timing = 1000, fadeTiming = 500) {
+export function ImageSlade(node, args = {images: [], timing: 1000, fadeTiming: 500}) {
+
+  let {images, timing, fadeTiming} = args;
 
   let error = false;
 
@@ -45,27 +51,72 @@ export function ImageSlade(node, images = [], timing = 1000, fadeTiming = 500) {
     function switchTransition() {
 
       node.style.backgroundImage = `url(${images[0]})`;
-      images.push(images.shift());
-      imagefornt.setAttribute("src", images[0]);
-      imagefornt.style.opacity = "0";
-
-
-      let it = 0;
-      let int = setInterval(() => {
-        it += fadeTiming/100;
-        imagefornt.style.opacity = it/fadeTiming;
-      }, fadeTiming/100);
-
       setTimeout(() => {
-        clearInterval(int);
-        imagefornt.style.opacity = 1;
-      }, fadeTiming);
+        
+        images.push(images.shift());
+        imagefornt.setAttribute("src", images[0]);
+        imagefornt.style.opacity = "0";
 
 
-      setTimeout(switchTransition, timing+fadeTiming);
+        let it = 0;
+        let int = setInterval(() => {
+          it += fadeTiming/100;
+          imagefornt.style.opacity = it/fadeTiming;
+        }, fadeTiming/100);
 
+        setTimeout(() => {
+          clearInterval(int);
+          imagefornt.style.opacity = 1;
+        }, fadeTiming);
+
+        setTimeout(switchTransition, timing+fadeTiming);
+
+      }, 10)
     }
 
   }
 
+}
+
+export function Sequence({wholeDuration, animations = [], sequencer = "sametime"}) {
+
+  let error = true;
+  if (!["sametime", "tail"].includes(sequencer)) {
+    console.log("Sequencer is not correct!");
+    error = false;
+  }
+
+  let sequence = [];
+  let elemnts = [];
+  let place = 0;
+
+  function run() {
+    for (let i = 0; i < elemnts.length; i++) {
+      elemnts[i]();
+    }
+  }
+
+  for (let i = 0; i < animations.length; i++) {
+
+    if (sequencer == "tail") {
+      let {duration = 1000, delay = 0} = animations[i];
+      if (animations[i]["delay"] != undefined) {
+        animations[i].delay += place;
+      } else {
+        animations[i]["delay"] = place;
+      }
+      place += duration;
+    }
+    
+    let anim = Animation(animations[i]);
+
+    sequence.push((node) => {
+      elemnts.push(() => {
+        anim({target: node});
+      });
+    });
+
+  }
+
+  return [run, sequence];
 }
